@@ -46,5 +46,63 @@ namespace C_Learn.Controllers
                 YearPublished = 1851
             }
         };
+
+        [HttpGet]
+        public ActionResult<List<Book>> GetBooks()
+        {
+            return Ok(books);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<Book> GetBookById(int id)
+        {
+            var book = books.FirstOrDefault(x => x.Id == id);
+
+            if (book == null)
+                return NotFound();
+
+            return Ok(book);
+        }
+
+        [HttpPost]        
+        public ActionResult<Book> AddBook(Book newBook)
+        {
+            if (newBook == null)
+                return BadRequest();
+
+            books.Add(newBook);
+
+            return CreatedAtAction(nameof(GetBookById), new {id = newBook.Id}, newBook);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateBook(int id, Book updatedBook)
+        {
+
+            var book = books.FirstOrDefault(x => x.Id == id);
+
+            if (book == null)
+                return NotFound();
+
+            book.Id = updatedBook.Id;
+            book.Title = updatedBook.Title;
+            book.Author = updatedBook.Author;
+            book.YearPublished = updatedBook.YearPublished;
+
+            return NoContent();  // 204
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBook(int id)
+        {
+            
+            var book = books.FirstOrDefault(x => x.Id == id);
+
+            if (book == null)
+                return NotFound();
+
+            books.Remove(book);
+            return NoContent();
+        }
     }
 }
