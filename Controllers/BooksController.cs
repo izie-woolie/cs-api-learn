@@ -1,6 +1,8 @@
-﻿using C_Learn.Models;
+﻿using C_Learn.Data;
+using C_Learn.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace C_Learn.Controllers
 {
@@ -8,78 +10,83 @@ namespace C_Learn.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        static private List<Book> books = new List<Book>
+        //static private List<Book> books = new List<Book>
+        //{
+        //    new Book
+        //    {
+        //        Id = 1,
+        //        Title = "The Great Gatsby",
+        //        Author = "F. Scott Fitzgerald",
+        //        YearPublished = 1925
+        //    },
+        //    new Book
+        //    {
+        //        Id = 2,
+        //        Title = "To Kill a Mocckingbird",
+        //        Author = "Harper Lee",
+        //        YearPublished = 1960
+        //    },
+        //    new Book
+        //    {
+        //        Id = 3,
+        //        Title = "1984",
+        //        Author = "George Orwell",
+        //        YearPublished = 1949
+        //    },
+        //    new Book
+        //    {
+        //        Id = 4,
+        //        Title = "Pride and Prejudice",
+        //        Author = "Jane Austen",
+        //        YearPublished = 1813
+        //    },
+        //    new Book
+        //    {
+        //        Id = 5,
+        //        Title = "Moby-Dick",
+        //        Author = "Herman Melville",
+        //        YearPublished = 1851
+        //    }
+        //};
+
+        private readonly APIContext _context;
+        public BooksController(APIContext context)
         {
-            new Book
-            {
-                Id = 1,
-                Title = "The Great Gatsby",
-                Author = "F. Scott Fitzgerald",
-                YearPublished = 1925
-            },
-            new Book
-            {
-                Id = 2,
-                Title = "To Kill a Mocckingbird",
-                Author = "Harper Lee",
-                YearPublished = 1960
-            },
-            new Book
-            {
-                Id = 3,
-                Title = "1984",
-                Author = "George Orwell",
-                YearPublished = 1949
-            },
-            new Book
-            {
-                Id = 4,
-                Title = "Pride and Prejudice",
-                Author = "Jane Austen",
-                YearPublished = 1813
-            },
-            new Book
-            {
-                Id = 5,
-                Title = "Moby-Dick",
-                Author = "Herman Melville",
-                YearPublished = 1851
-            }
-        };
+            _context = context;
+        }
 
         [HttpGet]
-        public ActionResult<List<Book>> GetBooks()
+        public async Task<ActionResult<List<Book>>> GetBooks()
         {
-            return Ok(books);
+            return Ok(await _context.Books.ToListAsync());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Book> GetBookById(int id)
+        public async Task<ActionResult<Book>> GetBookById(int id)
         {
-            var book = books.FirstOrDefault(x => x.Id == id);
-
+            var book = await _context.Books.FindAsync(id);
             if (book == null)
                 return NotFound();
 
             return Ok(book);
         }
 
-        [HttpPost]        
-        public ActionResult<Book> AddBook(Book newBook)
+        [HttpPost]
+        public async Task<ActionResult<Book>> AddBook(Book newBook)
         {
             if (newBook == null)
                 return BadRequest();
 
-            books.Add(newBook);
+            _context.Books.Add(newBook);
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBookById), new {id = newBook.Id}, newBook);
+            return CreatedAtAction(nameof(GetBookById), new { id = newBook.Id }, newBook);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateBook(int id, Book updatedBook)
+        public async Task<IActionResult> UpdateBook(int id, Book updatedBook)
         {
-
-            var book = books.FirstOrDefault(x => x.Id == id);
+            var book = await _context.Books.FindAsync(id);
 
             if (book == null)
                 return NotFound();
@@ -89,19 +96,22 @@ namespace C_Learn.Controllers
             book.Author = updatedBook.Author;
             book.YearPublished = updatedBook.YearPublished;
 
+            await _context.SaveChangesAsync();
+
             return NoContent();  // 204
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
-            
-            var book = books.FirstOrDefault(x => x.Id == id);
+
+            var book = await _context.Books.FindAsync(id);
 
             if (book == null)
                 return NotFound();
 
-            books.Remove(book);
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }
