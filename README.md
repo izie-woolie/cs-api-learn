@@ -3,7 +3,7 @@
 Building APIs in .NET frameworkk
 
 ## References
-- Video:  https://www.youtube.com/watch?v=38GNKtclDdE
+- Video:  [Link](https://www.youtube.com/watch?v=38GNKtclDdE)
 
 ## Dependencies
 1. EntityFrameworkCore

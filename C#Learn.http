@@ -15,20 +15,19 @@ Accept: application/json
 POST {{UrlRoot}}/api/books
 Content-Type: application/json
 {
-  "id": 6,
   "title": "C# Unlocked",
   "author": "Alen",
   "yearPublished": 2024
 }
 
 ###
-PUT {{UrlRoot}}/api/books/5
+PUT {{UrlRoot}}/api/books/6
 Content-Type: application/json
 {
-  "id": 5,
-  "title": "Moby-Dick Updated",
-  "author": "Herman Melville Updated",
-  "yearPublished": 1851
+  "id": 6,
+  "title": "C# Updated",
+  "author": "Allen Updated",
+  "yearPublished": 2024
 }
 
 ###
